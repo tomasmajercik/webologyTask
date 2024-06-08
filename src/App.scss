@@ -1,0 +1,42 @@
+*
+{
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+$appBackground: #333;
+$fontColor: #ddd;
+$text-highlight: #6B5B95;
+
+$red: #FF0000;
+
+
+body
+{
+  background-color: $appBackground;
+  text-align: center;
+}
+h1
+{
+  color: $fontColor;
+  font-weight: normal;
+}
+.form_container
+{
+  background-color: $red;
+
+  
+}
+.login_form
+{
+  background-color: aqua;
+}
+.register_form
+{
+  background-color: aquamarine;
+}
+.redirect_bttn
+{
+  cursor: pointer;
+  text-decoration: underline;
+  color: $text-highlight;
+}
