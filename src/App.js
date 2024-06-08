@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './App.scss';
 import $ from "jquery";
 
 
 
-
 function App() 
 {
+  // const navigate = useNavigate();
   // variables
   const [isLoggedIn, setLoggedIn] = useState(true);
 
@@ -32,7 +33,7 @@ function App()
 
   const handleSubmit = (ev) =>
   {
-    ev.preventDefault();
+    // ev.preventDefault();
 
     const form = $(ev.target);
     $.ajax({
@@ -40,7 +41,16 @@ function App()
       url: form.attr("action"),
       data: form.serialize(),
       success(data){
-        setResult(data);
+        // setResult(data);
+        if(data.success)
+        {
+          //  navigate('/dashboard');
+        }
+        else
+        {
+          setResult("We run into a problem: '" + data.message + "' sorry")
+        }
+
       }
     });
 
@@ -61,27 +71,27 @@ function App()
         {isLoggedIn ? 
         (
           <div className='login_form'>
-            <form action='http://localhost:8000' method='post' onSubmit={(event) => handleSubmit(event)}>
-              <input type='text' id='name' name='name' placeholder='name' value={name} onChange={(event) => handleNameChange(event)}/>
+            <form action='http://localhost/webologyTaskPHP/backend/data.php' method='post' onSubmit={(event) => handleSubmit(event)}>
+              <input className='nameInput' type='text' id='name' name='name' placeholder='name' value={name} onChange={(event) => handleNameChange(event)}/>
               <br/>
-              <input type='password' id='password' name='password' placeholder='password' value={password} onChange={(event) => handlePasswordChange(event)}/>
+              <input className='passwordInput' type='password' id='password' name='password' placeholder='password' value={password} onChange={(event) => handlePasswordChange(event)}/>
               <br/>
               <p>Don't have an account? <strong className='redirect_bttn' onClick={toggleForm}>Register here</strong></p>
-              <button type='submit'>Submit!{name}</button>
+              <button className='submitBtn' type='submit'>Submit!</button>
             </form>
           </div>
         ) : (
           <div className='register_form'>
-            <form action='http://localhost:8000' method='post' onSubmit={(event) => handleSubmit(event)}>
-              <input type='text' id='name' name='name' placeholder='name' value={name} onChange={(event) => handleNameChange(event)}/>
+            <form action='http://localhost/webologyTaskPHP/backend/data.php' method='post' onSubmit={(event) => handleSubmit(event)}>
+              <input className='nameInput' type='text' id='name' name='name' placeholder='name' value={name} onChange={(event) => handleNameChange(event)}/>
               <br/>
-              <input type='text' id='email' name='email' placeholder='email' value={email} onChange={(event) => handleEmailChange(event)}/>
+              <input className='nameInput' type='text' id='email' name='email' placeholder='email' value={email} onChange={(event) => handleEmailChange(event)}/>
               <br/>
-              <input type='password' id='name' name='password' placeholder='password' value={password} onChange={(event) => handlePasswordChange(event)}/>
+              <input className='nameInput' type='password' id='name' name='password' placeholder='password' value={password} onChange={(event) => handlePasswordChange(event)}/>
               <br/>
               <p>Already have an account? <strong className='redirect_bttn' onClick={toggleForm}>Login here</strong></p>
 
-              <button type='submit'>Submit!</button>
+              <button className='submitBtn' type='submit'>Submit!</button>
             </form>
           </div>
         )}
