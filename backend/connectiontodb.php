@@ -1,6 +1,6 @@
 <?php 
     /*localhostik*/
-    $connection = mysqli_connect("localhost", "root", "", "HomeNotHome"); 
+    $connection = mysqli_connect("localhost", "root", "", "webologyTask");
     
     /*real database*/
     // $servername = "localhost";

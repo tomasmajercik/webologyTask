@@ -1,9 +1,7 @@
 <?php
     header("Access-Control-Allow-Origin: http://localhost:3000");
-    // header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
-    // header("Access-Control-Allow-Headers: Content-Type");
-
-
+    header("Content-Type: application/json; charset=UTF-8");
+    session_start();
     
     $connection = mysqli_connect("localhost", "root", "", "webologyTask"); 
     
@@ -13,35 +11,36 @@
         die();
     }
         
+    function generateToken() // Simple token generation
+    {
+        return bin2hex(random_bytes(16)); 
+    }
 
     //chenk if the post was submitted
     if ($_SERVER["REQUEST_METHOD"] == "POST") 
     {
-        //variables
         $name = mysqli_real_escape_string($connection, $_POST["name"]);
         $password = mysqli_real_escape_string($connection, $_POST["password"]);
 
-
-        //select username and password from database
         $query = "SELECT * FROM `users` WHERE `username` = '$name' AND `password` = '$password'";
-        // $query = "SELECT * FROM `users`";
         $result = mysqli_query($connection, $query);
+        $token = generateToken();
 
-        // Check if there is a match in the database
-        if (mysqli_num_rows($result) > 0) // User exists, you can set a session or return a success response
+        if (mysqli_num_rows($result) > 0) 
         {
-            echo "User exists!";
+            $query = "UPDATE `users` SET `token` = '$token' WHERE `username` = '$name' AND `password` = '$password'";
+            mysqli_query($connection, $query);
+            echo json_encode(["success" => true, "token" => $token]);
         } 
-        else // User does not exist, you can return an error message
+        else 
         {
-            echo "User does not exist!";
+            echo json_encode(["success" => false]);
         }
     }
     else
     {
-        echo "some error occured";
+        echo json_encode(["success" => false]);
     }
-
 
 
 
