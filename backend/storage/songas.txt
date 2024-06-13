@@ -1,0 +1,4 @@
+Zdeno: 24.5
+Tomas: 24.5
+Martin: 9
+Michal: 15

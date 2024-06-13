@@ -1,0 +1,6 @@
+musel som:
+    1. stiahnut react router dom
+
+    2. odomknut storage folder pre zapis => sudo chmod -R 777 storage 
+
+    3. stiahnut react dropzone => npm install react-dropzone
