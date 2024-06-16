@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Navigate } from 'react-router-dom';
 import $ from 'jquery';
 import './dashboard.scss';
 
-import DragNdrop from "../components/DragNdrop.js"
+import DragNdrop from "../components/DragNdrop";
 
 export default function Dashboard() 
 {
@@ -15,6 +15,7 @@ export default function Dashboard()
 
   const [files, setFiles] = useState([]);
   const [file, setFile] = useState(null);
+  const inputRef = useRef();
 
   useEffect(() => {
     if (isAuthenticated && token) {
@@ -88,10 +89,26 @@ export default function Dashboard()
     setFiles(prevFiles => [...prevFiles, ...newFiles]);
   };
 
+  //preventing files from downloading and not downloading
+  const downloadFile = (path) =>
+  {
+    const fileName = path.split(".").pop();
+    console.log(fileName);
+    const aTag = document.createElement("a");
+    aTag.href = path;
+    aTag.setAttribute("download", fileName);
+    document.body.appendChild(aTag);
+    aTag.click();
+    aTag.remove();
+  }
+
+  //
+
   if (!isAuthenticated) 
   {
     return <Navigate to="/login"/>;
   }
+
 
   // layout
   return(
@@ -106,28 +123,28 @@ export default function Dashboard()
         
         {/* <DragNdrop token={token} username={username} updateFilesList={updateFilesList} /> */}
 
-        <div className='addNewFile'>
+        {/* <div className='addNewFile'>
           <input className='browse' type="file" onChange={handleFileChange} />
           <button className='upload' onClick={handleFileUpload}>Upload</button>
-        </div>
+        </div> */}
+
+        <DragNdrop token={token} username={username} updateFilesList={updateFilesList} />
+
+
+
 
         <div className='documentList'>
           <ul>
-          {
-            files.length === 0 ? 
-            (
+            {files.length === 0 ? (
               <li>No files</li>
             ) : (
               files.map((file, index) => (
-                <li key={index}>
-                  <a href={`http://localhost/webologyTaskPHP/backend/${file.file_path}`} target="_blank" rel="noopener noreferrer">
-                    {file.file_name}
-                  </a>
+                <li className='documentLine' key={index}>
+                  <button onClick={()=>downloadFile(file.file_name)}>{file.file_name}</button>
                 </li>
               ))
-            )
-          }
-        </ul>
+            )}
+          </ul>
         </div>
 
       </div>
@@ -137,15 +154,3 @@ export default function Dashboard()
   );
 }
 
-{/* <div className="dropzone" onDragOver={handleDragOver} onDrop={handleDrop}>
-  <h1>Drag and Drop files to upload</h1>
-  <h1>Or</h1>
-  <input
-      type='file'
-      multiple
-      onChange={handleFileChange}
-      hidden
-      ref={inputRef}
-  />
-  <button onClick={handleFileInputClick}>Select Files</button>
-</div> */}

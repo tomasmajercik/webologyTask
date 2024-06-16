@@ -39,19 +39,37 @@ ul
     margin-top: 10px;
     padding: 30px 0;
 }
-.dropzone
-{
-    margin: 0 auto;
-    width: 360px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 300px;
-    border: 2px white dashed;
-    padding: 20px;
-}
+// .dropzone
+// {
+//     margin: 0 auto;
+//     width: 360px;
+//     display: flex;
+//     flex-direction: column;
+//     justify-content: center;
+//     align-items: center;
+//     height: 300px;
+//     border: 2px white dashed;
+//     padding: 20px;
+// }
 button
 {
     padding: 10px;
+}
+
+.documentLine
+{
+
+
+    &:nth-child(odd)
+    {
+        background-color: red;
+    }
+    &:nth-child(even)
+    {
+        background-color: blue;
+    }
+    button
+    {
+        padding: 10px;
+    }
 }
