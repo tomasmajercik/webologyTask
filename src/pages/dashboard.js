@@ -1,9 +1,21 @@
+// imports
 import React, { useEffect, useState, useRef } from 'react';
 import { Navigate } from 'react-router-dom';
 import $ from 'jquery';
 import './dashboard.scss';
 
+// components
 import DragNdrop from "../components/DragNdrop";
+import Modal from '../components/Modal';
+import YesNoModal from '../components/YesNoModal';
+import TagModal from '../components/tagModal';
+
+//images
+import downloadIcon from '../imgs/downloadIcon.png';
+import renameIcon from '../imgs/renameIco.png';
+import deleteIcon from '../imgs/deleteIco.png';
+import tagIcon from '../imgs/tagIco.png';
+
 
 export default function Dashboard() 
 {
@@ -17,8 +29,21 @@ export default function Dashboard()
   const [file, setFile] = useState(null);
   const inputRef = useRef();
 
+  const [renamingFile, setRenamingFile] = useState(null);
+  const [newFileName, setNewFileName] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingFile, setDeletingFile] = useState(null);
+
+  const [showTagModal, setShowTagModal] = useState(false);
+  const [toBeTaggedFile, setToBeTaggedFile] = useState(false);
+  const [userTags, setUserTags] = useState([]);
+  const [newTag, setNewTag] = useState("");
+
   useEffect(() => {
-    if (isAuthenticated && token) {
+    if (isAuthenticated && token) 
+    {
       $.ajax({
         type: "POST",
         url: 'http://localhost/webologyTaskPHP/backend/getUserInfo.php',
@@ -42,6 +67,31 @@ export default function Dashboard()
       });
     }
   }, [isAuthenticated, token]);
+
+  // useEffect(() => {
+  //   if (isAuthenticated && token && username)
+  //   {
+  //     $.ajax({
+  //       type: "POST",
+  //       url: 'http://localhost/webologyTaskPHP/backend/getTags.php',
+  //       data: { username },
+  //       success(data) 
+  //       {
+  //         if (data.success) 
+  //         {
+  //           setUserTags(data.tags || []);
+  //         } 
+  //         else 
+  //         {
+  //           console.error('Failed to fetch tags:', data.message);
+  //         }
+  //       },
+  //       error(xhr, status, error) {
+  //         console.error('AJAX error:', status, error);
+  //       }
+  //     });
+  //   }
+  // }, [username]);
 
   const handleFileChange = (event) => 
   {
@@ -92,7 +142,7 @@ export default function Dashboard()
   //preventing files from downloading and not downloading
   const downloadFile = (path) =>
   {
-    const fileName = path.split(".").pop();
+    const fileName = path;
     console.log(fileName);
     const aTag = document.createElement("a");
     aTag.href = path;
@@ -101,7 +151,186 @@ export default function Dashboard()
     aTag.click();
     aTag.remove();
   }
+  //
 
+  // rename file
+  const renameFile = (fileName) =>
+  {
+    setRenamingFile(fileName);
+    setNewFileName(fileName);
+    setShowModal(true);
+  }
+  const handleRenameSave = (newName) =>
+  {
+    console.log("Renaming file:", renamingFile, "to", newName);
+    setShowModal(false);
+
+    $.ajax({
+      type: "POST",
+      url: 'http://localhost/webologyTaskPHP/backend/renameFile.php',
+      data: { oldName: renamingFile, newName: newName, username },
+      success: function(data) {
+          if (data.success) {
+              setFiles(files.map(file =>
+                  file.file_name === renamingFile ? { ...file, file_name: newName } : file
+              ));
+              setShowModal(false);
+          } else {
+              console.error('Failed to rename file:', data.message);
+          }
+      },
+      error: function(xhr, status, error) {
+          console.error('AJAX error:', status, error);
+          console.log("Response Text:", xhr.responseText);
+      }
+  });
+  $.ajax({
+    type: "POST",
+    url: 'http://localhost/webologyTaskPHP/backend/renameFileTags.php',
+    data: { oldName: renamingFile, newName: newName, username },
+    success: function(data) {
+        if (data.success) {
+            setFiles(files.map(file =>
+                file.file_name === renamingFile ? { ...file, file_name: newName } : file
+            ));
+            setShowModal(false);
+        } else {
+            console.error('Failed to rename file:', data.message);
+        }
+    },
+});
+  }
+  //
+  //deleteFile
+  const deleteFile = (fileName) => 
+  {
+    setDeletingFile(fileName);
+    setShowDeleteModal(true);
+  }
+
+  const handleDelete = () => 
+  {
+    console.log("Deleting file:", deletingFile);
+    setShowDeleteModal(false);
+
+    $.ajax({
+      type: "POST",
+      url: 'http://localhost/webologyTaskPHP/backend/deleteFile.php',
+      data: { fileName: deletingFile, username },
+      success(data) {
+        if (data.success) {
+          setFiles(files.filter(file => file.file_name !== deletingFile));
+        } else {
+          console.error('Failed to delete file:', data.message);
+        }
+      },
+      error(xhr, status, error) {
+        console.error('AJAX error:', status, error);
+      }
+    });
+  }
+  /**/
+  // tagging 
+    
+  const updateTags = (fileName) =>
+  {
+    pullFreshTags(fileName);
+    setShowTagModal(true);
+    setToBeTaggedFile(fileName);
+  }  
+  const handleTagToggle = (tag) => 
+  {
+    if (userTags.includes(tag)) {
+        setUserTags(userTags.filter(t => t !== tag));
+    } else {
+        setUserTags([...userTags, tag]);
+    }
+  };
+  const handleTagInputChange = (event) => 
+  {
+    setNewTag(event.target.value);
+  };
+  const handleAddTag = (tagName) =>
+  {
+    if (newTag && !userTags.includes(tagName)) 
+    {
+      setUserTags([...userTags, newTag]);
+      setNewTag("");
+    }
+  } 
+  const onClose = () =>
+  {
+    setShowTagModal(false);
+  }
+  /*!*/
+  const handleSave = () => {
+    setShowTagModal(false);
+  
+    $.ajax({
+      type: "POST",
+      url: 'http://localhost/webologyTaskPHP/backend/updateTags.php',
+      data: { username: username, fileName: toBeTaggedFile, tags: JSON.stringify(userTags) },
+      success: function(data) {
+        console.log("Server Response:", data);
+        if (data.success) {
+          setFiles(files.map(file =>
+            file.file_name === toBeTaggedFile ? { ...file, tags: userTags } : file
+          ));
+        } else {
+          console.error('Failed to update tags:', data.message);
+        }
+      },
+      error: function(xhr, status, error) {
+        console.error('AJAX error:', status, error);
+        console.log("Response Text:", xhr.responseText);
+      }
+    });
+  }
+  
+  const pullFreshTags = (fileName) =>
+  {
+    $.ajax({
+      type: "POST",
+      url: 'http://localhost/webologyTaskPHP/backend/getFileTags.php',
+      data: { username: username, fileName: fileName },
+      success(data) 
+      {
+        if (data.success) 
+        {
+          setUserTags(data.tags || []);
+        } 
+        else 
+        {
+          setUserTags([]);
+        }
+      },
+      error(xhr, status, error) {
+        console.error('AJAX error:', status, error);
+      }
+    });
+  }
+
+  // const handleSaveTags = (tags) => {
+  //   setShowTagModal(false);
+
+  //   $.ajax({
+  //     type: "POST",
+  //     url: 'http://localhost/webologyTaskPHP/backend/updateTags.php',
+  //     data: { fileName: toBeTaggedFileName, username, tags },
+  //     success(data) {
+  //       if (data.success) {
+  //         setFiles(files.map(file => 
+  //           file.file_name === toBeTaggedFileName ? { ...file, tags } : file
+  //         ));
+  //       } else {
+  //         console.error('Failed to update tags:', data.message);
+  //       }
+  //     },
+  //     error(xhr, status, error) {
+  //       console.error('AJAX error:', status, error);
+  //     }
+  //   });
+  // };
   //
 
   if (!isAuthenticated) 
@@ -109,6 +338,7 @@ export default function Dashboard()
     return <Navigate to="/login"/>;
   }
 
+  // console.log(userTags);
 
   // layout
   return(
@@ -134,22 +364,96 @@ export default function Dashboard()
 
 
         <div className='documentList'>
-          <ul>
-            {files.length === 0 ? (
-              <li>No files</li>
-            ) : (
-              files.map((file, index) => (
-                <li className='documentLine' key={index}>
-                  <button onClick={()=>downloadFile(file.file_name)}>{file.file_name}</button>
-                </li>
-              ))
-            )}
-          </ul>
+          <table>
+            <thead>
+              <tr className='tableHeader'>
+                <th>File Name</th>
+                <th className='actionLine'>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {files.length === 0 ? (
+                <tr>
+                  <td colSpan="2">No files</td>
+                </tr>
+              ) : (
+                files.map((file, index) => (
+                  <tr className='documentLine' key={index}>
+                    <td>{file.file_name}</td>
+                    <td className='actionRow'>
+                      <button className='downloadBTN' onClick={() => downloadFile(file.file_name)}> <img src={downloadIcon} alt='download'/> </button>
+                      <button className='renameBTN' onClick={() => renameFile(file.file_name)}> <img src={renameIcon} alt="Rename"/> </button>
+                      <button className='deleteBTN' onClick={() => deleteFile(file.file_name)}> <img src={deleteIcon} alt="Delete" /> </button>
+                      <button className='addTagBTN' onClick={() => updateTags(file.file_name, file.tags)}> <img src={tagIcon} alt="Delete" /> </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
 
       </div>
-    
+
+      <Modal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        onSave={handleRenameSave}
+        newFileName={newFileName}
+        setNewFileName={setNewFileName}
+        oldFileName={renamingFile}
+      />
+
+      <YesNoModal
+        show={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onSave={handleDelete}
+        fileName={deletingFile}
+      />
+
+      {showTagModal && (
+
+        // pullFreshTags(toBeTaggedFile),
+
+        <div className='overlay'>
+          <div className="modal">
+            <h4>Update Tags for file "{toBeTaggedFile}"</h4>
+            {/*checkboxes*/}
+            <div className="tags-list">
+                {userTags.map((tag, index) => (
+                  <div key={index} className="tag-item">
+                    <input
+                      type="checkbox"
+                      checked={userTags.includes(tag)}
+                      onChange={() => handleTagToggle(tag)}
+                    />
+                    <span>{tag}</span>
+                  </div>
+                ))}
+            </div>
+            {/*add tag*/}
+            <div className="add-tag">
+              <input
+                type="text"
+                value={newTag}
+                onChange={handleTagInputChange}
+                placeholder="Enter new tag"
+                onKeyUp={(e) => e.key === 'Enter' && handleAddTag()}
+              />
+              <button onClick={handleAddTag}>Add Tag</button>
+            </div>
+            {/*functional buttons*/}
+            <div className="modal-actions">
+              <button onClick={onClose}>Cancel</button>
+              <button onClick={handleSave}>Save</button>
+            </div>
+          </div>
+        </div>
+
+      )}
+
     </>
+  
 
   );
 }

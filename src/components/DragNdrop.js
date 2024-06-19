@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import $ from 'jquery';
+import $, { event } from 'jquery';
 import "./dragNdrop.scss";
 
 export default function DragNdrop({ token, username, updateFilesList }) 
@@ -8,6 +8,8 @@ export default function DragNdrop({ token, username, updateFilesList })
     const [files, setFiles] = useState(null);
     const [animation, setAnimation] = useState(false);
     const [dragCounter, setDragCounter] = useState(0);
+    const [showForm, setShowForm] = useState(false);
+    const [showFormCounter, setshowFormCounter] = useState(0);
 
     const handleDragOver = (event) => 
     {
@@ -16,20 +18,32 @@ export default function DragNdrop({ token, username, updateFilesList })
 
 
     //animation when drag file is over
-    const handleDragEnter = (event) => {
+    const handleDragEnter = (event) => 
+    {
         event.preventDefault();
         setDragCounter(prev => prev + 1);
         if (!animation) setAnimation(true);
     };
-    const handleDragLeave = (event) => {
+    const handleDragLeave = (event) => 
+    {
         event.preventDefault();
         setDragCounter(prev => prev - 1);
     };
-    useEffect(() => {
+    useEffect(() => 
+    {
         if (dragCounter === 0) {
             setAnimation(false);
         }
     }, [dragCounter]);
+
+    useEffect(() => 
+    {
+        if(showFormCounter === 0)
+        {
+            setShowForm(false);
+        }
+    }, [showFormCounter]);
+
     const handleDrop = (event) => {
         event.preventDefault();
         setFiles(event.dataTransfer.files);
@@ -71,6 +85,8 @@ export default function DragNdrop({ token, username, updateFilesList })
         });
     };
 
+
+
     if (files) {
         return (
             <div className="uploads">
@@ -87,6 +103,9 @@ export default function DragNdrop({ token, username, updateFilesList })
 
     return (
         <>
+        <div className={`${showForm ? "overlay" : "fontGone"}`}>
+            <h1>Smrdia mi nohy</h1>
+        </div>
         <div 
             className={`dropzone ${animation ? "animate" : ""}`}
             onDragOver={handleDragOver}
@@ -94,11 +113,10 @@ export default function DragNdrop({ token, username, updateFilesList })
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
         >
-          {
-          animation ? 
+          { animation ? 
           (
             <h1 className={`${animation ? "animateFont" : ""}`}>Drop Files to Upload</h1>
-          ) : (<h1 className={`${animation ? "animateFont" : ""}`}>Drag and Drop Files to Upload</h1>
+          ) : (<h1 className={`${animation ? "animateFont" : ""}`}>Drag, hold and Drop Files to Upload</h1>
 
           )
 
@@ -114,6 +132,11 @@ export default function DragNdrop({ token, username, updateFilesList })
           />
           <button className={`${animation ? "fontGone" : ""}`} onClick={() => inputRef.current.click()}>Select Files</button>
         </div>
+
+
+        
+     
+
         </>
     );
 }
