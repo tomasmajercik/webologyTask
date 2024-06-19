@@ -15,6 +15,7 @@ import downloadIcon from '../imgs/downloadIcon.png';
 import renameIcon from '../imgs/renameIco.png';
 import deleteIcon from '../imgs/deleteIco.png';
 import tagIcon from '../imgs/tagIco.png';
+import filerIcon from '../imgs/filteIco.png';
 
 
 export default function Dashboard() 
@@ -24,6 +25,9 @@ export default function Dashboard()
 
   const [username, setUsername] = useState("");
   const [result, setResult] = useState("");
+
+  const [filter, setFilter] = useState(false);
+  const [filtredFiles, setFiltredFiles] = useState([]);
 
   const [files, setFiles] = useState([]);
   const [file, setFile] = useState(null);
@@ -67,31 +71,6 @@ export default function Dashboard()
       });
     }
   }, [isAuthenticated, token]);
-
-  // useEffect(() => {
-  //   if (isAuthenticated && token && username)
-  //   {
-  //     $.ajax({
-  //       type: "POST",
-  //       url: 'http://localhost/webologyTaskPHP/backend/getTags.php',
-  //       data: { username },
-  //       success(data) 
-  //       {
-  //         if (data.success) 
-  //         {
-  //           setUserTags(data.tags || []);
-  //         } 
-  //         else 
-  //         {
-  //           console.error('Failed to fetch tags:', data.message);
-  //         }
-  //       },
-  //       error(xhr, status, error) {
-  //         console.error('AJAX error:', status, error);
-  //       }
-  //     });
-  //   }
-  // }, [username]);
 
   const handleFileChange = (event) => 
   {
@@ -200,7 +179,7 @@ export default function Dashboard()
     },
 });
   }
-  //
+  /**/
   //deleteFile
   const deleteFile = (fileName) => 
   {
@@ -231,7 +210,6 @@ export default function Dashboard()
   }
   /**/
   // tagging 
-    
   const updateTags = (fileName) =>
   {
     pullFreshTags(fileName);
@@ -262,7 +240,6 @@ export default function Dashboard()
   {
     setShowTagModal(false);
   }
-  /*!*/
   const handleSave = () => {
     setShowTagModal(false);
   
@@ -286,7 +263,6 @@ export default function Dashboard()
       }
     });
   }
-  
   const pullFreshTags = (fileName) =>
   {
     $.ajax({
@@ -310,35 +286,19 @@ export default function Dashboard()
     });
   }
 
-  // const handleSaveTags = (tags) => {
-  //   setShowTagModal(false);
+  // filter
+  const startFilter = () => 
+  {
+   console.log("cas filtrovat");
+  }
 
-  //   $.ajax({
-  //     type: "POST",
-  //     url: 'http://localhost/webologyTaskPHP/backend/updateTags.php',
-  //     data: { fileName: toBeTaggedFileName, username, tags },
-  //     success(data) {
-  //       if (data.success) {
-  //         setFiles(files.map(file => 
-  //           file.file_name === toBeTaggedFileName ? { ...file, tags } : file
-  //         ));
-  //       } else {
-  //         console.error('Failed to update tags:', data.message);
-  //       }
-  //     },
-  //     error(xhr, status, error) {
-  //       console.error('AJAX error:', status, error);
-  //     }
-  //   });
-  // };
-  //
+  /**/
+
 
   if (!isAuthenticated) 
   {
     return <Navigate to="/login"/>;
   }
-
-  // console.log(userTags);
 
   // layout
   return(
@@ -350,13 +310,6 @@ export default function Dashboard()
       
       <div className='filesBrowser'>
         <h2>Your files: </h2>
-        
-        {/* <DragNdrop token={token} username={username} updateFilesList={updateFilesList} /> */}
-
-        {/* <div className='addNewFile'>
-          <input className='browse' type="file" onChange={handleFileChange} />
-          <button className='upload' onClick={handleFileUpload}>Upload</button>
-        </div> */}
 
         <DragNdrop token={token} username={username} updateFilesList={updateFilesList} />
 
@@ -364,6 +317,9 @@ export default function Dashboard()
 
 
         <div className='documentList'>
+          <div className='filterSpace'>
+            <button className='filter' onClick={startFilter}> <img src={filerIcon} alt="Delete" /> </button>
+          </div>
           <table>
             <thead>
               <tr className='tableHeader'>
@@ -377,6 +333,10 @@ export default function Dashboard()
                   <td colSpan="2">No files</td>
                 </tr>
               ) : (
+
+                filter ?
+                <h1>smutko som</h1> 
+                :
                 files.map((file, index) => (
                   <tr className='documentLine' key={index}>
                     <td>{file.file_name}</td>
@@ -388,6 +348,8 @@ export default function Dashboard()
                     </td>
                   </tr>
                 ))
+
+
               )}
             </tbody>
           </table>
