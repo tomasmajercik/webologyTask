@@ -289,7 +289,7 @@ export default function Dashboard()
   // filter
   const startFilter = () => 
   {
-   console.log("cas filtrovat");
+   console.log("cas filtrovat!");
   }
 
   /**/
