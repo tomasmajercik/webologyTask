@@ -131,6 +131,17 @@ table
     height: 60px;
     margin: 0 auto;
     text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+
+    h3
+    {
+        margin-left: 10px;
+        color: red;
+        width: 700px;
+        overflow: scroll;
+    }
 
     .filter
     {

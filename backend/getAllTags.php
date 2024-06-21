@@ -16,7 +16,7 @@
         $username = mysqli_real_escape_string($connection, $_POST["username"]);
         $fileName = mysqli_real_escape_string($connection, $_POST["fileName"]);
         
-        $query = "SELECT `tag` FROM `tags` WHERE `username` = '$username' AND `file_name` = '$fileName'";
+        $query = "SELECT `tag` FROM `tags` WHERE `username` = '$username'";
         $result = mysqli_query($connection, $query);
         
         if (mysqli_num_rows($result) > 0) 
@@ -27,8 +27,7 @@
                 $tags[] = $row["tag"];
             }
             echo json_encode(["success" => true, "tags" => $tags]);
-        }
-        else {
+        } else {
             echo json_encode(["success" => false, "message" => "Error retrieving tags"]);
         }
     } else {

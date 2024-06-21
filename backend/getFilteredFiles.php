@@ -11,27 +11,32 @@
         die();
     }
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["username"])) 
+    if ($_SERVER["REQUEST_METHOD"] == "POST") 
     {
         $username = mysqli_real_escape_string($connection, $_POST["username"]);
-        $fileName = mysqli_real_escape_string($connection, $_POST["fileName"]);
-        
-        $query = "SELECT `tag` FROM `tags` WHERE `username` = '$username' AND `file_name` = '$fileName'";
-        $result = mysqli_query($connection, $query);
-        
-        if (mysqli_num_rows($result) > 0) 
+        $tag = mysqli_real_escape_string($connection, $_POST["tag"]);
+
+        $fileQuery = "SELECT file_name FROM `tags` WHERE `tag` = '$tag'";
+        $filesResult = mysqli_query($connection, $fileQuery);
+
+        if ($filesResult) 
         {
-            $tags = [];
-            while ($row = mysqli_fetch_assoc($result)) 
+            $files = [];
+            while ($row = mysqli_fetch_assoc($filesResult)) 
             {
-                $tags[] = $row["tag"];
+                $files[] = $row["file_name"];
             }
-            echo json_encode(["success" => true, "tags" => $tags]);
-        }
-        else {
+            echo json_encode(["success" => true, "files" => $files]);
+        } 
+        else 
+        {
             echo json_encode(["success" => false, "message" => "Error retrieving tags"]);
         }
-    } else {
+    } 
+    else 
+    {
         echo json_encode(["success" => false, "message" => "Invalid request"]);
     }
+
+    mysqli_close($connection);
 ?>
