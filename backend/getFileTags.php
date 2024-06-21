@@ -27,7 +27,8 @@
                 $tags[] = $row["tag"];
             }
             echo json_encode(["success" => true, "tags" => $tags]);
-        } else {
+        }
+        else {
             echo json_encode(["success" => false, "message" => "Error retrieving tags"]);
         }
     } else {

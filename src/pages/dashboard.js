@@ -8,7 +8,8 @@ import './dashboard.scss';
 import DragNdrop from "../components/DragNdrop";
 import Modal from '../components/Modal';
 import YesNoModal from '../components/YesNoModal';
-import TagModal from '../components/tagModal';
+import Filter from '../components/filter';
+
 
 //images
 import downloadIcon from '../imgs/downloadIcon.png';
@@ -28,6 +29,7 @@ export default function Dashboard()
 
   const [filter, setFilter] = useState(false);
   const [filtredFiles, setFiltredFiles] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
 
   const [files, setFiles] = useState([]);
   const [file, setFile] = useState(null);
@@ -44,6 +46,10 @@ export default function Dashboard()
   const [toBeTaggedFile, setToBeTaggedFile] = useState(false);
   const [userTags, setUserTags] = useState([]);
   const [newTag, setNewTag] = useState("");
+
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [refreshTags, setrefreshTags] = useState(false);
+  const [currentSelectTags, setCurrentSelectTags] = useState([]);
 
   useEffect(() => {
     if (isAuthenticated && token) 
@@ -153,7 +159,9 @@ export default function Dashboard()
               setFiles(files.map(file =>
                   file.file_name === renamingFile ? { ...file, file_name: newName } : file
               ));
-              setShowModal(false);
+              setFiltredFiles(filtredFiles.map(file =>
+                file.file_name === renamingFile ? { ...file, file_name: newName } : file
+              ));
           } else {
               console.error('Failed to rename file:', data.message);
           }
@@ -169,10 +177,9 @@ export default function Dashboard()
     data: { oldName: renamingFile, newName: newName, username },
     success: function(data) {
         if (data.success) {
-            setFiles(files.map(file =>
-                file.file_name === renamingFile ? { ...file, file_name: newName } : file
-            ));
-            setShowModal(false);
+          setFiltredFiles(filtredFiles.map(file =>
+            file.file_name === renamingFile ? { ...file, file_name: newName } : file
+          ));
         } else {
             console.error('Failed to rename file:', data.message);
         }
@@ -186,7 +193,6 @@ export default function Dashboard()
     setDeletingFile(fileName);
     setShowDeleteModal(true);
   }
-
   const handleDelete = () => 
   {
     console.log("Deleting file:", deletingFile);
@@ -199,6 +205,21 @@ export default function Dashboard()
       success(data) {
         if (data.success) {
           setFiles(files.filter(file => file.file_name !== deletingFile));
+        } else {
+          console.error('Failed to delete file:', data.message);
+        }
+      },
+      error(xhr, status, error) {
+        console.error('AJAX error:', status, error);
+      }
+    });
+    $.ajax({
+      type: "POST",
+      url: 'http://localhost/webologyTaskPHP/backend/deleteFileTags.php',
+      data: { fileName: deletingFile, username },
+      success(data) {
+        if (data.success) {
+          setFiles(filtredFiles.filter(file => file.file_name !== deletingFile));
         } else {
           console.error('Failed to delete file:', data.message);
         }
@@ -253,6 +274,12 @@ export default function Dashboard()
           setFiles(files.map(file =>
             file.file_name === toBeTaggedFile ? { ...file, tags: userTags } : file
           ));
+
+          if(!refreshTags)
+            setrefreshTags(true);
+          else
+            setrefreshTags(false);
+
         } else {
           console.error('Failed to update tags:', data.message);
         }
@@ -289,11 +316,50 @@ export default function Dashboard()
   // filter
   const startFilter = () => 
   {
-   console.log("cas filtrovat");
+    setShowFilterModal(true);
+    if(!refreshTags)
+      setrefreshTags(true);
+    else
+      setrefreshTags(false);
   }
-
+  const showFiltredData = (tags) => {
+    if (tags.length > 0) 
+    {
+      setCurrentSelectTags(tags);
+      setFilter(true);
+      setFiltredFiles([]);
+      tags.forEach(tag => {
+          $.ajax({
+              type: "POST",
+              url: 'http://localhost/webologyTaskPHP/backend/getFilteredFiles.php',
+              data: { username, tag },
+              success: function(data) 
+              {
+                  if (data.success) 
+                  {
+                    setFiltredFiles(prevFiles => [...prevFiles, ...data.files.map(file => ({ file_name: file }))]);
+                  } 
+                  else 
+                  {
+                      console.error('Error retrieving filtered files:', data.message);
+                  }
+              },
+              error: function(xhr, status, error) {
+                  console.error('AJAX error:', status, error);
+              }
+          });
+      });
+      setShowFilterModal(false);
+    } 
+    else 
+    {
+      setCurrentSelectTags([]);
+      setShowFilterModal(false);
+      setFilter(false);
+      setFiltredFiles([]);
+    }
+};
   /**/
-
 
   if (!isAuthenticated) 
   {
@@ -313,11 +379,17 @@ export default function Dashboard()
 
         <DragNdrop token={token} username={username} updateFilesList={updateFilesList} />
 
-
-
-
         <div className='documentList'>
           <div className='filterSpace'>
+
+            {
+            currentSelectTags.length > 0 ? (
+              <h3 className='caption'>showing files inluding tags: {
+                currentSelectTags.map((currentSelectTag, index) => (<span className='currentSelectTag' key={index}> {currentSelectTag}</span>) )}</h3>)
+                :
+                <h3>(no filter)</h3>
+              
+            }
             <button className='filter' onClick={startFilter}> <img src={filerIcon} alt="Delete" /> </button>
           </div>
           <table>
@@ -335,11 +407,24 @@ export default function Dashboard()
               ) : (
 
                 filter ?
-                <h1>smutko som</h1> 
+                filtredFiles.map((file, index) => (
+                  <tr className='documentLine' key={index}>
+
+                    <td className='nameRow'>{file.file_name}</td>
+                    <td className='actionRow'>
+                      <button className='downloadBTN' onClick={() => downloadFile(file.file_name)}> <img src={downloadIcon} alt='download'/> </button>
+                      <button className='renameBTN' onClick={() => renameFile(file.file_name)}> <img src={renameIcon} alt="Rename"/> </button>
+                      <button className='deleteBTN' onClick={() => deleteFile(file.file_name)}> <img src={deleteIcon} alt="Delete" /> </button>
+                      <button className='addTagBTN' onClick={() => updateTags(file.file_name, file.tags)}> <img src={tagIcon} alt="Delete" /> </button>
+                    </td>
+
+                  </tr>
+
+                ))
                 :
                 files.map((file, index) => (
                   <tr className='documentLine' key={index}>
-                    <td>{file.file_name}</td>
+                    <td className='nameRow'>{file.file_name}</td>
                     <td className='actionRow'>
                       <button className='downloadBTN' onClick={() => downloadFile(file.file_name)}> <img src={downloadIcon} alt='download'/> </button>
                       <button className='renameBTN' onClick={() => renameFile(file.file_name)}> <img src={renameIcon} alt="Rename"/> </button>
@@ -372,6 +457,13 @@ export default function Dashboard()
         onSave={handleDelete}
         fileName={deletingFile}
       />
+      <Filter
+        show={showFilterModal}
+        onClose={() => setShowFilterModal(false)}
+        onSave={showFiltredData}
+        username = {username}
+        refresh = {refreshTags}
+      />
 
       {showTagModal && (
 
@@ -383,8 +475,9 @@ export default function Dashboard()
             {/*checkboxes*/}
             <div className="tags-list">
                 {userTags.map((tag, index) => (
-                  <div key={index} className="tag-item">
+                  <div key={index} className="tag-item checkBoxes">
                     <input
+                      className="checkBox"
                       type="checkbox"
                       checked={userTags.includes(tag)}
                       onChange={() => handleTagToggle(tag)}
@@ -396,17 +489,18 @@ export default function Dashboard()
             {/*add tag*/}
             <div className="add-tag">
               <input
+                className='input'
                 type="text"
                 value={newTag}
                 onChange={handleTagInputChange}
                 placeholder="Enter new tag"
                 onKeyUp={(e) => e.key === 'Enter' && handleAddTag()}
               />
-              <button onClick={handleAddTag}>Add Tag</button>
+              <button className='addButton' onClick={handleAddTag}>Add Tag</button>
             </div>
             {/*functional buttons*/}
             <div className="modal-actions">
-              <button onClick={onClose}>Cancel</button>
+              <button className='cancelButton' onClick={onClose}>Cancel</button>
               <button onClick={handleSave}>Save</button>
             </div>
           </div>
@@ -419,4 +513,3 @@ export default function Dashboard()
 
   );
 }
-

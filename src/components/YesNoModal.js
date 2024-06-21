@@ -17,8 +17,8 @@ export default function YesNoModal({ show, onClose, onSave, fileName})
       <div className="modal">
         <h2>Do you indeed want to delete this file?</h2>
         <div className="modal-actions">
-          <button onClick={onClose}>No</button>
-          <button onClick={handleYes}>
+          <button className='cancelRenameDelButton' onClick={onClose}>No</button>
+          <button className='renameDelButton' onClick={handleYes}>
             Yes, delete!
           </button>
         </div>

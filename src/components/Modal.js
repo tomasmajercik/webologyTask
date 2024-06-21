@@ -37,14 +37,15 @@ export default function Modal({ show, onClose, onSave, newFileName, setNewFileNa
       <div className="modal">
         <h2>Rename File</h2>
         <input
+          className='nameInput'
           type="text"
           value={newName}
           onChange={handleInputChange}
           placeholder="Enter new name (without extension)"
         />
         <div className="modal-actions">
-          <button onClick={onClose}>Cancel</button>
-          <button onClick={handleSave} disabled={!newName}>
+          <button className='cancelRenameDelButton' onClick={onClose}>Cancel</button>
+          <button className='renameDelButton' onClick={handleSave} disabled={!newName}>
             Save
           </button>
         </div>

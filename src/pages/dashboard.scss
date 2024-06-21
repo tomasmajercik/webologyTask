@@ -20,6 +20,7 @@ ul
 }
 .filesBrowser
 {
+    text-align: center;
     h2
     {
         color: #98B4D4;
@@ -74,6 +75,7 @@ table
     width: 800px;
     margin: 0 auto;
     height: auto;
+    overflow: hidden;
 }
 .tableHeader
 {
@@ -94,6 +96,67 @@ table
     display: flex;
     align-items: center;
     justify-content: center;
+
+    .modal
+    {
+        padding-bottom: 40px;
+    }
+
+    Button
+    {
+        padding: 10px;
+        background-color: #92A8D1;
+        border-radius: 5px;
+        border: none;
+    }
+    .cancelButton
+    {
+        padding: 10px;
+        background-color: #FF6F61;
+        border-radius: 5px;
+        border: none;
+    }
+    .addButton
+    {
+        margin-left: 2px;
+        padding: 10px;
+        color: #333;
+        background-color: #EFC050;
+        border-radius: 5px;
+        border: none;
+    }
+    input
+    {
+        background-color: transparent;
+        color: #f5f5f5;
+        border: none;
+        border-bottom: 2px #808080 solid;
+        outline: none;
+        transition: .1s;
+        height: 30px;
+        font-size: 15px;
+        text-align: center;
+        
+
+        &:focus 
+        {
+
+            border: none;
+            border-bottom: #EFC050 2px solid;
+        }
+    }
+    .checkBoxes
+    {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+    }
+    .checkBox
+    {
+        height: 30px;
+    }
+
 
 }
 .documentList
@@ -131,6 +194,16 @@ table
     height: 60px;
     margin: 0 auto;
     text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    h3
+    {
+        margin-left: 40px;
+        color: black;
+        overflow: scroll;
+    }
 
     .filter
     {
@@ -146,4 +219,66 @@ table
         }
     }
 }
+.currentSelectTag:nth-child(even)
+{
+    color: #5B5EA6;
+    border-left: solid 1px black;
+}
+.currentSelectTag:nth-child(odd)
+{
+    padding-right: 5px;
+    color: #5B5EA6;
+}
 
+
+@media (max-width: 870px) {
+    .documentList 
+    {
+      width: 100%;
+    }
+  
+    table
+    {
+        width: 600px;
+    }
+    .nameRow
+    {
+        width: 50%;
+    }
+    .actionRow
+    {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+  }
+  
+  @media (max-width: 645px) {
+    .documentList 
+    {
+      width: 90%;
+    }
+  
+    table
+    {
+        width: 90%;
+    }
+    .nameRow
+    {
+        width: 50%;
+    }
+    .actionRow
+    {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .header
+    {
+        padding: 0 15px;
+    }
+
+  }

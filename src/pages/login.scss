@@ -1,53 +1,38 @@
 *
 {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  // border: 1px red solid;
 }
 
 $appBackground: #333;
 $fontColor: #ddd;
-$text-highlight: #6B5B95;
+$text-highlight: #84D6D4;
 $btn-color: #FF6F61;
 
-$red: #FF0000;
+$red: #ca2121;
+$outline: #008000;
 
 
 body
 {
   background-color: $appBackground;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 90vh;
+  width: 100%;
 }
 h1
 {
+  text-align: center;
   color: $fontColor;
   font-weight: normal;
-}
-.login_form
-{
-  background-color: aqua;
-}
-.register_form
-{
-  background-color: aquamarine;
 }
 .redirect_bttn
 {
   cursor: pointer;
   text-decoration: underline;
   color: $text-highlight;
-}
-.login_form, .register_form
-{
-  margin: 0 auto;
-  width: 300px;
-  height: 300px;
-  background-color: #444;
-  padding: 20px;
-  border-radius: 10px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
 }
 
 .nameInput, .passwordInput
@@ -61,7 +46,7 @@ h1
   width: 90%;
   font-size: 16px;
   transition: .1s linear;
-
+  
   &:focus {
     border-bottom-color: #007bff; 
     padding: 5px;
@@ -77,9 +62,59 @@ h1
   border: none;
   background-color: $btn-color;
   width: 50%;
-  height: 30px;
+  height: 40px;
   border-radius: 5px;
   color: #222;
-
+  
   cursor: pointer;
+}
+.login_form, .register_form
+{
+  margin: 0 auto;
+  width: 600px;
+  height: 300px;
+  background-color: #444;
+  padding: 20px;
+  border-radius: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+
+  border: 1px $outline solid;
+
+  .switch
+  {
+    color: #f5f5f5;
+  }
+
+}
+.error
+{
+  color: $red;
+}
+
+@media (max-width: 665px)
+{
+  .login_form, .register_form
+  {
+    flex-direction: column;
+    width: 500px;
+    margin: 0;
+    text-align: center;
+    justify-content: center;
+  }
+
+}
+@media (max-width: 580px)
+{
+  .login_form, .register_form
+  {
+    flex-direction: column;
+    width: 90%;
+    margin: 0;
+    text-align: center;
+    justify-content: center;
+  }
+
 }

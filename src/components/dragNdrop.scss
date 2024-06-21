@@ -11,12 +11,23 @@
     border: 2px white dashed;
     padding: 25px;
     
-    button
-    {
-        padding: 10px;
-        background-color: #55B4B0;
-        border: none;
-    }
+    
+}
+.dragNdropBtn
+{
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #55B4B0;
+    border: none;
+    margin: 3px;
+}
+.cancelButton
+{
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #FF6F61;
+    border: none;
+    margin: 3px;
 }
 .animate
 {

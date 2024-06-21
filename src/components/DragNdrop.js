@@ -94,8 +94,8 @@ export default function DragNdrop({ token, username, updateFilesList })
                     {Array.from(files).map((file, idx) => <li key={idx}>{file.name}</li>)}
                 </ul>
                 <div className="actions">
-                    <button onClick={() => setFiles(null)}>Cancel</button>
-                    <button onClick={handleUpload}>Upload</button>
+                    <button className='dragNdropBtn cancelButton' onClick={() => setFiles(null)}>Cancel</button>
+                    <button className='dragNdropBtn' onClick={handleUpload}>Upload</button>
                 </div>
             </div>
         );
@@ -103,9 +103,6 @@ export default function DragNdrop({ token, username, updateFilesList })
 
     return (
         <>
-        <div className={`${showForm ? "overlay" : "fontGone"}`}>
-            <h1>Smrdia mi nohy</h1>
-        </div>
         <div 
             className={`dropzone ${animation ? "animate" : ""}`}
             onDragOver={handleDragOver}
@@ -130,7 +127,7 @@ export default function DragNdrop({ token, username, updateFilesList })
             ref={inputRef}
             className={`${animation ? "fontGone" : ""}`}
           />
-          <button className={`${animation ? "fontGone" : ""}`} onClick={() => inputRef.current.click()}>Select Files</button>
+          <button className={`dragNdropBtn ${animation ? "fontGone" : ""}`} onClick={() => inputRef.current.click()}>Select Files</button>
         </div>
 
 

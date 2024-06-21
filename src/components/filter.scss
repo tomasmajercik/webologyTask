@@ -1,0 +1,55 @@
+.UnCheckedlist
+{
+    border-top: 1px solid black;
+}
+.filterButton
+{
+    padding: 10px;
+    background-color: #92A8D1;
+    border-radius: 5px;
+    border: none;
+}
+.cancelButton
+{
+    padding: 10px;
+    background-color: #DD4124;
+    border-radius: 5px;
+    border: none;
+}
+.modal
+{
+    width: 400px;
+    height: 350px;
+}
+$selected: #009B77;
+$unselected: #FF6F61;
+.tagButton
+{
+    padding: 10px;
+    margin: 3px 0;
+    background-color: $unselected;
+    border-radius: 5px;
+    border: none;
+    width: 70%;
+    height: 40px;
+}
+.tagButtonSel
+{
+    padding: 10px;
+    margin: 3px 0;
+    background-color: $selected;
+    border-radius: 5px;
+    border: none;
+    width: 70%;
+    height: 40px;
+}
+
+@media (max-width: 500px)
+{
+    .modal
+    {
+        width: 350px;
+        height: 320px;
+    }
+
+}
