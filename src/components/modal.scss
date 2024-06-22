@@ -12,15 +12,21 @@
   z-index: 1000;
 }
 
-.modal {
+.modal 
+{
   background: #444;
   color: #f5f5f5;
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   width: 300px;
-  height: 200px;
+  height: 100px;
   text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 .nameInput
 {
@@ -50,7 +56,8 @@ button
     transform: scale(1.05);
   }
 }
-.modal-actions {
+.modal-actions 
+{
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
@@ -61,7 +68,7 @@ button
   background-color: #92A8D1;
   border-radius: 5px;
   border: none;
-  margin-right: 20px;
+  margin-left: 20px;
 }
 .cancelRenameDelButton
 {
@@ -69,6 +76,6 @@ button
   background-color: #FF6F61;
   border-radius: 5px;
   border: none;
-  margin-left: 20px;
+  margin-right: 20px;
 
 }

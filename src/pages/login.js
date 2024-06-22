@@ -120,11 +120,11 @@ export default function Login()
           <div className='register_form'>
             <h1>Register now!</h1>
             <form method='post' onSubmit={(event) => handleRegister(event)}>
-              <input className='nameInput' type='text' id='name' name='name' placeholder='name' value={name} onChange={(event) => handleNameChange(event)}/>
+              <input className='nameInput' type='text' id='name' name='name' required placeholder='name' value={name} onChange={(event) => handleNameChange(event)}/>
               <br/>
-              <input className='nameInput' type='email' id='email' name='email' placeholder='email' value={email} onChange={(event) => handleEmailChange(event)}/>
+              <input className='nameInput' type='email' id='email' name='email' required placeholder='email' value={email} onChange={(event) => handleEmailChange(event)}/>
               <br/>
-              <input className='nameInput' type='password' id='name' name='password' placeholder='password' value={password} onChange={(event) => handlePasswordChange(event)}/>
+              <input className='nameInput' type='password' id='name' name='password' required placeholder='password' value={password} onChange={(event) => handlePasswordChange(event)}/>
               <br/>
               <p className='switch'>Already have an account? <strong className='redirect_bttn' onClick={toggleForm}>Login here</strong></p>
               <p className='error'>{errorMessage}</p>
